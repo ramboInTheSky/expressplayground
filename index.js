@@ -2,6 +2,7 @@ const express = require('express')
 const fs = require('fs')
 const _ = require('lodash')
 const axios = require('axios')
+const engines = require('consolidate')
 
 //declarations
 const app = express()
@@ -20,9 +21,12 @@ fs.readFile('users.json', function (err, data) {
   })
 });
 
-//set viewa
 
+//set views
+
+app.engine('hbs', engines.handlebars)
 app.set('views', './views');
+app.set('view engine', 'hbs')
 
 
 //endpoints
@@ -39,14 +43,16 @@ app.get('/user/:username', function (req, res, next) {
 app.get('/users', function (req, res) {
   let buffer = ''
   if (users.length) {
-    users.forEach(function (user) {
-      buffer += '<a href="user/' + user.username + '">' + user.name.full + '</a><br>'
+    // users.forEach(function (user) {
+    //   buffer += '<a href="user/' + user.username + '">' + user.name.full + '</a><br>'
+    // })
+    // res.send(buffer)
+    res.render('index', {
+      users: users
     })
-    res.send(buffer)
-  }
-  else {
+  } else {
     res.send('There are no users available')
-  }  
+  }
 })
 
 app.get('/proxyusers', function (req, res) {

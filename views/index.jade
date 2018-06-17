@@ -1,0 +1,10 @@
+doctype html
+html(lang="en")
+head
+  title= "Users Page"
+body
+  h1 Jade
+  ul 
+    each user in users 
+      li
+        a(href="/user/" + user.username)= user.name.full
