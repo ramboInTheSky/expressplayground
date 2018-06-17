@@ -1,28 +1,132 @@
 <!DOCTYPE html>
 <html lang="eng">
-  <head>
-    <meta charset="UTF-8">
-    <title>User Detail</title>
-    <style>
-      *{
-        font-family: Arial, Helvetica, sans-serif
-      }
-      div{
-        display: flex;
-        align-items: center;
-        padding: 0.5rem;
-      }
-      a{
-        padding-left: 1rem;
-      }
-      </style>
-  </head>
-  <body>
-    <h1>{{username}}</h1>
-    <ul>
-      <div>
-        <img src="/images/{{username}}_lg.jpg" />
-      </div>
-    </ul>
-  </body>
+
+<head>
+  <meta charset="UTF-8">
+  <title>User Detail</title>
+  <style>
+    * {
+      font-family: Arial, Helvetica, sans-serif
+    }
+    
+    div.pic {
+      padding-left: 2em;
+      font-size: 1.2em;
+      float: left;
+      height: 400px;
+    }
+    
+    div a {
+      padding-left: 0.5em;
+    }
+    
+    div.nav {
+      float: left;
+      width: 100%;
+      height: 100px;
+    }
+    
+    img {
+      padding-right: 2em;
+    }
+    
+    input {
+      font-size: 1em;
+    }
+    
+    dt {
+      font-weight: bolder;
+      display: inline-block;
+      width: 4em;
+    }
+    
+    dd {
+      display: inline-block;
+      margin-left: 0;
+      line-height: 1.5;
+    }
+    
+    .edit {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="nav">
+    <a href="/users">Back to Users List</a>
+  </div>
+
+  <div class="pic">
+    <img src="/images/{{user.username}}_med.jpg">
+    <p>
+      <a href="#" onclick="edit()">Edit</a>
+      <a href="#" onclick="del()">Delete</a>
+    </p>
+  </div>
+
+  <h1>{{user.name.full}}</h1>
+  <h3>{{user.username}}</h3>
+  <dl>
+    <dt>Street</dt>
+    <dd class="view">{{user.location.street}}</dd>
+    <dd class="edit"><input id="street" type="text" value="{{user.location.street}}"></dd>
+    <br>
+    <dt>City</dt>
+    <dd class="view">{{user.location.city}}</dd>
+    <dd class="edit"><input id="city" type="text" value="{{user.location.city}}"></dd>
+    <br>
+    <dt>State</dt>
+    <dd class="view">{{user.location.state}}</dd>
+    <dd class="edit"><input id="state" type="text" value="{{user.location.state}}"></dd>
+    <br>
+    <dt>Zip</dt>
+    <dd class="view">{{user.location.zip}}</dd>
+    <dd class="edit"><input id="zip" type="text" value="{{user.location.zip}}"></dd>
+    <br>
+    <dt></dt>
+    <dd class="edit">
+      <input type="submit" value="Save" onclick="save()">
+      <input type="submit" value="Cancel" onclick="cancel()">
+    </dd>
+  </dl>
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script>
+                                                   function edit() {
+                                                     $('.view').hide()
+                                                     $('.edit').show()
+                                                   }
+                                                   function cancel() {
+                                                     $('.view').show()
+                                                     $('.edit').hide()
+                                                   }
+                                                   function save() {
+                                                     $.ajax('/user/{{user.username}}', {
+                                                       method: 'PUT',
+                                                       data: {
+                                                         street: $('#street').val(),
+                                                         city: $('#city').val(),
+                                                         state: $('#state').val(),
+                                                         zip: $('#zip').val()
+                                                       },
+                                                       complete: function () {
+                                                         cancel()
+                                                         location.reload()
+                                                       }
+                                                     })
+                                                   }
+                                                   function del() {
+                                                     $.ajax('/user/{{user.username}}', {
+                                                       method: 'DELETE',
+                                                       complete: function () {
+                                                         location = '/users'
+                                                       }
+                                                     })
+                                                   }
+  </script>
+
+</body>
+
 </html>
