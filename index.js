@@ -10,7 +10,6 @@ let users = []
 
 
 //routines
-
 fs.readFile('users.json', function (err, data) {
   if (err) {
     console.log(err)
@@ -23,21 +22,25 @@ fs.readFile('users.json', function (err, data) {
 
 
 //set views
-
 app.engine('hbs', engines.handlebars)
 app.set('views', './views');
 app.set('view engine', 'hbs')
 
+//serve static files
+app.use('/images', express.static('images'))
+
 
 //endpoints
-
 app.get('/', function (req, res) {
-  res.send('lallero')
+  res.send('server is up')
 })
 
 app.get('/user/:username', function (req, res, next) {
   var username = req.params.username
-  res.send(username)
+  // res.send(username)
+  res.render('user', {
+      username
+    })
 })
 
 app.get('/users', function (req, res) {
@@ -48,7 +51,7 @@ app.get('/users', function (req, res) {
     // })
     // res.send(buffer)
     res.render('index', {
-      users: users
+      users
     })
   } else {
     res.send('There are no users available')

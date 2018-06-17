@@ -2,7 +2,7 @@
 <html lang="eng">
   <head>
     <meta charset="UTF-8">
-    <title>Users Index</title>
+    <title>User Detail</title>
     <style>
       *{
         font-family: Arial, Helvetica, sans-serif
@@ -18,14 +18,11 @@
       </style>
   </head>
   <body>
-    <h1>Users</h1>
+    <h1>{{username}}</h1>
     <ul>
-      {{#each users as |user|}}
       <div>
-        <img src="/images/{{user.username}}_sm.jpg" />
-        <a href="/user/{{user.username}}">{{user.name.full}}</a>
+        <img src="/images/{{username}}_lg.jpg" />
       </div>
-      {{/each}}
     </ul>
   </body>
 </html>
