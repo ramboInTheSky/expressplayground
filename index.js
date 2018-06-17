@@ -42,9 +42,8 @@ function getUser(username) {
   try {
     userFile = fs.readFileSync(getUserPath(username), {
       encoding: 'utf8'
-    }, )
-  }
-  catch (e) { 
+    })
+  } catch (e) {
     console.log(e)
     return null
   }
@@ -56,13 +55,14 @@ function getUser(username) {
   return user
 }
 
-function saveUser(username, user) { 
+function saveUser(username, user) {
   const filePath = getUserPath(username)
   try {
     fs.unlinkSync(filePath)
-    fs.writeFileSync(filePath, JSON.stringify(user, null, 2), { encoding: 'utf8' })
-  }
-  catch (e) {
+    fs.writeFileSync(filePath, JSON.stringify(user, null, 2), {
+      encoding: 'utf8'
+    })
+  } catch (e) {
     console.log(e)
     throw e
   }
@@ -72,12 +72,11 @@ function deleteUser(username) {
   const filePath = getUserPath(username)
   try {
     fs.unlinkSync(filePath)
-  }
-  catch (e) {
+  } catch (e) {
     console.log(e)
     throw e
   }
- }
+}
 
 
 //set views
@@ -87,7 +86,9 @@ app.set('view engine', 'hbs')
 
 //app use
 app.use('/images', express.static('images'))
-app.use(bodyParser.urlencoded({extended: true}))
+app.use(bodyParser.urlencoded({
+  extended: true
+}))
 
 //endpoints
 app.get('/', function (req, res) {
@@ -123,47 +124,42 @@ app.get('/users', function (req, res) {
   })
 })
 
-app.all('/*/:username', function (req, res, next) { 
+app.all('/*/:username', function (req, res, next) {
   console.log(req.method, 'for', req.params.username)
   next()
 })
 
-app.get('*.json', function (req, res) { 
-  res.download('./users/' + req.path.substring(req.path.lastIndexOf('/')))  
+app.get('*.json', function (req, res) {
+  res.download('./users/' + req.path.substring(req.path.lastIndexOf('/')))
 })
 
-app.get('/user/:username/raw', function (req, res) { 
+app.get('/user/:username/raw', function (req, res) {
   const username = req.params.username
   const user = getUser(username)
-  res.json(user)  
+  res.json(user)
 })
 
-function verifyUser(req, res, next) { 
+function verifyUser(req, res, next) {
   const filePath = getUserPath(req.params.username)
-  fs.exists(filePath, function (yes) { 
+  fs.exists(filePath, function (yes) {
     if (yes) {
       next()
-    }
-    else {
+    } else {
       res.redirect('/user/error/' + req.params.username)
-    }  
+    }
   })
 }
 
-app.get('/user/:username', verifyUser, function (req, res, next) {
+app.route('/user/:username')
+.get(verifyUser, function (req, res, next) {
   const username = req.params.username
   const user = getUser(username)
-      res.render('user', {
-      user
-    })
+  res.render('user', {
+    user
+  })
 })
 
-
-app.get('/user/error/:username', function (req, res, next) { 
-  res.send('user ' + req.params.username + ' does not exist')
-})
-
-app.put('/user/:username', function (req, res, next) {
+.put(function (req, res, next) {
   const username = req.params.username
   let user = getUser(username)
   user.location = req.body
@@ -171,10 +167,14 @@ app.put('/user/:username', function (req, res, next) {
   res.end()
 })
 
-app.delete('/user/:username', function (req, res, next) {
+.delete(function (req, res, next) {
   const username = req.params.username
   deleteUser(username)
   res.sendStatus(200).end()
+})
+
+app.get('/user/error/:username', function (req, res, next) {
+  res.send('user ' + req.params.username + ' does not exist')
 })
 
 // app.get('/proxyusers', function (req, res) {
