@@ -2,86 +2,19 @@ const express = require('express')
 const fs = require('fs')
 const path = require('path')
 const _ = require('lodash')
-const axios = require('axios')
+// const axios = require('axios')
 const bodyParser = require('body-parser')
 const engines = require('consolidate')
-
+const helpers = require('./helpers')
 //declarations
 const app = express()
 
 
-//routines
-// fs.readFile('users.json', function (err, data) {
-//   if (err) {
-//     console.log(err)
-//   }
-//   JSON.parse(data).forEach(function (item) {
-//     item.name.full = _.startCase(`${item.name.first} ${item.name.last}`)
-//     users = users.concat(item)
-//   })
-// });
-
-
-//helpers
-function sortAlphabetically(a, b) {
-  if (a.name.last > b.name.last) {
-    return 1
-  }
-  if (a.name.last < b.name.last) {
-    return -1
-  }
-  return 0
-}
-
-function getUserPath(username) {
-  return path.join(__dirname, 'users', username) + '.json'
-}
-
-function getUser(username) {
-  let userFile
-  try {
-    userFile = fs.readFileSync(getUserPath(username), {
-      encoding: 'utf8'
-    })
-  } catch (e) {
-    console.log(e)
-    return null
-  }
-  let user = JSON.parse(userFile)
-  user.name.full = _.startCase(`${user.name.first} ${user.name.last}`)
-  _.keys(user.location).forEach(function (key) {
-    user.location[key] = _.startCase(user.location[key])
-  })
-  return user
-}
-
-function saveUser(username, user) {
-  const filePath = getUserPath(username)
-  try {
-    fs.unlinkSync(filePath)
-    fs.writeFileSync(filePath, JSON.stringify(user, null, 2), {
-      encoding: 'utf8'
-    })
-  } catch (e) {
-    console.log(e)
-    throw e
-  }
-}
-
-function deleteUser(username) {
-  const filePath = getUserPath(username)
-  try {
-    fs.unlinkSync(filePath)
-  } catch (e) {
-    console.log(e)
-    throw e
-  }
-}
 
 
 //set views
 app.engine('hbs', engines.handlebars)
-app.set('views', './views');
+app.set('views', './views')
 app.set('view engine', 'hbs')
 
 //app use
@@ -114,7 +47,7 @@ app.get('/users', function (req, res) {
         user.name.full = _.startCase(`${user.name.first} ${user.name.last}`)
         users = users.concat(user)
         if (users.length === files.length) {
-          users.sort(sortAlphabetically)
+          users.sort(helpers.sortAlphabetically)
           res.render('index', {
             users
           })
@@ -135,12 +68,12 @@ app.get('*.json', function (req, res) {
 
 app.get('/user/:username/raw', function (req, res) {
   const username = req.params.username
-  const user = getUser(username)
+  const user = helpers.getUser(username)
   res.json(user)
 })
 
 function verifyUser(req, res, next) {
-  const filePath = getUserPath(req.params.username)
+  const filePath = helpers.getUserPath(req.params.username)
   fs.exists(filePath, function (yes) {
     if (yes) {
       next()
@@ -151,29 +84,29 @@ function verifyUser(req, res, next) {
 }
 
 app.route('/user/:username')
-.get(verifyUser, function (req, res, next) {
-  const username = req.params.username
-  const user = getUser(username)
-  res.render('user', {
-    user
+  .get(verifyUser, function (req, res) {
+    const username = req.params.username
+    const user = helpers.getUser(username)
+    res.render('user', {
+      user
+    })
   })
-})
 
-.put(function (req, res, next) {
-  const username = req.params.username
-  let user = getUser(username)
-  user.location = req.body
-  saveUser(username, user)
-  res.end()
-})
+  .put(function (req, res) {
+    const username = req.params.username
+    let user = helpers.getUser(username)
+    user.location = req.body
+    helpers.saveUser(username, user)
+    res.end()
+  })
 
-.delete(function (req, res, next) {
-  const username = req.params.username
-  deleteUser(username)
-  res.sendStatus(200).end()
-})
+  .delete(function (req, res) {
+    const username = req.params.username
+    helpers.deleteUser(username)
+    res.sendStatus(200).end()
+  })
 
-app.get('/user/error/:username', function (req, res, next) {
+app.get('/user/error/:username', function (req, res) {
   res.send('user ' + req.params.username + ' does not exist')
 })
 
@@ -190,3 +123,5 @@ app.get('/user/error/:username', function (req, res, next) {
 var server = app.listen(3000, function () {
   console.log(`Server running at http://localtest:${server.address().port}`)
 })
+
+//https://egghead.io/lessons/node-js-organize-code-by-subpath-in-express

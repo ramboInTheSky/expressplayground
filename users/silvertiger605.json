@@ -3,12 +3,13 @@
   "name": {
     "title": "miss",
     "first": "gail",
-    "last": "holmes"
+    "last": "holmes",
+    "full": "Gail Holmes"
   },
   "location": {
-    "street": "5019 nowlin rd",
-    "city": "grand prairie",
-    "state": "hawaii",
+    "street": "5019 Nowlin Rd",
+    "city": "Grand Prairie",
+    "state": "Palermo",
     "zip": "24561"
   },
   "email": "gail.holmes71@example.com",
