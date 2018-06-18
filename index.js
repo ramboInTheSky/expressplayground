@@ -7,6 +7,8 @@ const bodyParser = require('body-parser')
 const engines = require('consolidate')
 const helpers = require('./helpers')
 const userRouter = require('./user')
+const JSONStream = require('JSONStream')
+
 //declarations
 const app = express()
 
@@ -57,6 +59,20 @@ app.get('/users', function (req, res) {
   })
 })
 
+app.get('/users/by/:gender', function (req, res) {
+  const readable = fs.createReadStream('users.json')
+  let users = []
+  readable
+    .pipe(JSONStream.parse('*', function (user) {
+      if (user.gender === req.params.gender) users.push(user)
+    }))
+    .on('end', function () {
+      res.render('index', {
+        users
+      })
+    })
+})
+
 app.get('*.json', function (req, res) {
   res.download('./users/' + req.path.substring(req.path.lastIndexOf('/')))
 })
@@ -78,4 +94,3 @@ app.get('/error/:username', function (req, res) {
 var server = app.listen(3000, function () {
   console.log(`Server running at http://localtest:${server.address().port}`)
 })
-

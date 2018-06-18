@@ -2,6 +2,7 @@ const express = require('express')
 const fs = require('fs')
 const helpers = require('./helpers')
 
+
 //declarations
 const router = express.Router({
   mergeParams: true
@@ -14,8 +15,10 @@ router.all('/', function (req, res, next) {
 
 router.get('/raw', function (req, res) {
   const username = req.params.username
-  const user = helpers.getUser(username)
-  res.json(user)
+  const readable = fs.createReadStream('./users/' + username + '.json')
+  // const user = helpers.getUser(username)
+  // res.json(user)
+  readable.pipe(res)
 })
 
 function verifyUser(req, res, next) {

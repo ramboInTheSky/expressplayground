@@ -12,6 +12,7 @@
   "author": "_Alz <alefimo@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "JSONStream": "^1.3.3",
     "axios": "^0.18.0",
     "body-parser": "^1.18.3",
     "consolidate": "^0.15.1",
