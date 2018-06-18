@@ -71,10 +71,9 @@ function deleteUser(username) {
   }
 }
 
-exports = {
-  sortAlphabetically,
-  getUserPath,
-  getUser,
-  saveUser,
-  deleteUser
-}
+
+  exports.sortAlphabetically = sortAlphabetically
+  exports.getUserPath = getUserPath
+  exports.getUser = getUser
+  exports.saveUser =saveUser
+  exports.deleteUser = deleteUser

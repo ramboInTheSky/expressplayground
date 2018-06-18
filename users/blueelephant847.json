@@ -3,12 +3,13 @@
   "name": {
     "title": "mr",
     "first": "lloyd",
-    "last": "herrera"
+    "last": "herrera",
+    "full": "Lloyd Herrera"
   },
   "location": {
-    "street": "9313 railroad st",
-    "city": "akron",
-    "state": "michigan",
+    "street": "9313 Railroad St",
+    "city": "Akron1",
+    "state": "Michigan",
     "zip": "64237"
   },
   "email": "lloyd.herrera71@example.com",

@@ -6,10 +6,9 @@ const _ = require('lodash')
 const bodyParser = require('body-parser')
 const engines = require('consolidate')
 const helpers = require('./helpers')
+const userRouter = require('./user')
 //declarations
 const app = express()
-
-
 
 
 //set views
@@ -22,6 +21,7 @@ app.use('/images', express.static('images'))
 app.use(bodyParser.urlencoded({
   extended: true
 }))
+app.use('/user/:username', userRouter)
 
 //endpoints
 app.get('/', function (req, res) {
@@ -57,56 +57,11 @@ app.get('/users', function (req, res) {
   })
 })
 
-app.all('/*/:username', function (req, res, next) {
-  console.log(req.method, 'for', req.params.username)
-  next()
-})
-
 app.get('*.json', function (req, res) {
   res.download('./users/' + req.path.substring(req.path.lastIndexOf('/')))
 })
 
-app.get('/user/:username/raw', function (req, res) {
-  const username = req.params.username
-  const user = helpers.getUser(username)
-  res.json(user)
-})
-
-function verifyUser(req, res, next) {
-  const filePath = helpers.getUserPath(req.params.username)
-  fs.exists(filePath, function (yes) {
-    if (yes) {
-      next()
-    } else {
-      res.redirect('/user/error/' + req.params.username)
-    }
-  })
-}
-
-app.route('/user/:username')
-  .get(verifyUser, function (req, res) {
-    const username = req.params.username
-    const user = helpers.getUser(username)
-    res.render('user', {
-      user
-    })
-  })
-
-  .put(function (req, res) {
-    const username = req.params.username
-    let user = helpers.getUser(username)
-    user.location = req.body
-    helpers.saveUser(username, user)
-    res.end()
-  })
-
-  .delete(function (req, res) {
-    const username = req.params.username
-    helpers.deleteUser(username)
-    res.sendStatus(200).end()
-  })
-
-app.get('/user/error/:username', function (req, res) {
+app.get('/error/:username', function (req, res) {
   res.send('user ' + req.params.username + ' does not exist')
 })
 
@@ -124,4 +79,3 @@ var server = app.listen(3000, function () {
   console.log(`Server running at http://localtest:${server.address().port}`)
 })
 
-//https://egghead.io/lessons/node-js-organize-code-by-subpath-in-express
